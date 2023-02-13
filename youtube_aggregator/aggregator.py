@@ -35,7 +35,7 @@ def summarize(video_id, shorten, output_txt):
     chunks = chunk_words(all_text, 4097)
 
     # Set up the OpenAI API client
-    with open("../.env", "r") as envfile:
+    with open(".env", "r") as envfile:
         my_api_key = envfile.readlines()
 
     openai.api_key = my_api_key[0].strip("\n")
@@ -80,7 +80,7 @@ def summarize(video_id, shorten, output_txt):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", type=str, required=True, help="The YouTube URL which you want to summarize.")
-    parser.add_argument("--shorten", type=bool, default=False, help="Shorten the summary of the video")
+    parser.add_argument("--shorten", type=bool, default=True, help="Shorten the summary of the video")
     parser.add_argument("--output", type=str, default=None, help="Write the result to txt.")
     args = parser.parse_args()
 
