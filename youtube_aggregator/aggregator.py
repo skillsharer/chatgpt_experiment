@@ -79,13 +79,14 @@ def summarize(video_id, shorten, output_txt):
         except Exception as e:
             print(datetime.datetime.now(), "OpenAI API does not response. ERROR: ", e)
 
-    print(response)
+
 
     if output_txt:
         with open(output_txt, "w") as txtfile:
             txtfile.write(response)
         print(datetime.datetime.now(), "Output written to: ", output_txt)
 
+    return response
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -97,4 +98,5 @@ if __name__ == "__main__":
     video_id = args.url.split("v=")[-1]
     shorten = args.shorten
     txt_file = args.output
-    summarize(video_id, shorten, txt_file)
+    response = summarize(video_id, shorten, txt_file)
+    print(response)
