@@ -1,3 +1,4 @@
+import datetime
 import openai
 import argparse
 from youtube_transcript_api import YouTubeTranscriptApi
@@ -35,7 +36,7 @@ def summarize(video_id, shorten, output_txt):
     chunks = chunk_words(all_text, 4097)
 
     # Set up the OpenAI API client
-    with open(".env", "r") as envfile:
+    with open("../.env", "r") as envfile:
         my_api_key = envfile.readlines()
 
     openai.api_key = my_api_key[0].strip("\n")
@@ -45,36 +46,45 @@ def summarize(video_id, shorten, output_txt):
 
     for chunk in chunks:
         chunk = prompt + chunk
-        completion = openai.Completion.create(
-            engine=model_engine,
-            prompt=chunk,
-            max_tokens=200,
-            n=1,
-            stop=None,
-            temperature=0.1,
-        )
+        try:
+            completion = openai.Completion.create(
+                engine=model_engine,
+                prompt=chunk,
+                max_tokens=200,
+                n=1,
+                stop=None,
+                temperature=0.1,
+            )
 
-        response = completion.choices[0].text
+            response = completion.choices[0].text
+        except Exception as e:
+            print(datetime.datetime.now(), "OpenAI API does not response. ERROR: ", e)
+            response = ""
         responses.append(response.replace('\n', ''))
 
     response = ' '.join(responses)
 
     if shorten:
         final_input = prompt + response
-        completion = openai.Completion.create(
-            engine=model_engine,
-            prompt=final_input,
-            max_tokens=500,
-            n=1,
-            stop=None,
-            temperature=0.1,
-        )
-        response = completion.choices[0].text
+        try:
+            completion = openai.Completion.create(
+                engine=model_engine,
+                prompt=final_input,
+                max_tokens=500,
+                n=1,
+                stop=None,
+                temperature=0.1,
+            )
+            response = completion.choices[0].text
+        except Exception as e:
+            print(datetime.datetime.now(), "OpenAI API does not response. ERROR: ", e)
+
     print(response)
 
     if output_txt:
         with open(output_txt, "w") as txtfile:
             txtfile.write(response)
+        print(datetime.datetime.now(), "Output written to: ", output_txt)
 
 
 if __name__ == "__main__":
